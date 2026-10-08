@@ -59,12 +59,15 @@
 </div>
 <script>
   // ===== НАСТРОЙКА =====
-  const BOOSTY_URL = 'https://boosty.to/ТВОЙ_БЛОГ';   // ссылка, где у тебя кнопка доната
+  // ссылку на донат присылает бот (BOOSTY_DONATE_URL в .env); эта — запасная, если открыли страницу не из бота
+  const DEFAULT_URL = 'https://boosty.to/herofallbot';
   const SUPPORT = '';                                // ник для вопросов без @ (пусто — не показывать)
   // =====================
   const tg = window.Telegram?.WebApp;
   tg?.ready(); tg?.expand();
   const q = new URLSearchParams(location.search);
+  const to = q.get('to') || '';
+  const BOOSTY_URL = /^https:\/\/boosty\.to\//.test(to) ? to : DEFAULT_URL; // только boosty.to
   const d = q.get('d'), rub = q.get('rub');
   document.getElementById('sum').innerHTML = d && rub ? `💎 <b>${d}</b> алмазов = <b>${rub} ₽</b>` : '';
   const id = tg?.initDataUnsafe?.user?.id ?? q.get('id') ?? '—';
