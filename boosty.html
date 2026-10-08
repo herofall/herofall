@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>HeroFall · алмазы</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root{--bg1:#2f3568;--bg2:#10122a;--gold1:#ffe27a;--gold2:#f5a623;--ink:#1b1e38;--text:#eef0ff;--muted:#aab0d6;--card:rgba(255,255,255,.07)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{font-family:-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;color:var(--text);
+    background:radial-gradient(circle at 50% 22%,var(--bg1) 0%,var(--bg2) 75%);min-height:100vh;
+    display:flex;justify-content:center;padding:28px 18px 40px}
+  .wrap{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px}
+  .gem{font-size:84px;line-height:1;filter:drop-shadow(0 0 22px rgba(120,170,255,.55));animation:float 3s ease-in-out infinite}
+  @keyframes float{50%{transform:translateY(-8px)}}
+  h1{font-size:28px;font-weight:800;letter-spacing:.3px}
+  h1 b{background:linear-gradient(var(--gold1),var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sum{font-size:18px;color:var(--muted)} .sum b{color:var(--text);font-size:22px}
+  .card{width:100%;background:var(--card);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:16px 16px 14px;text-align:left}
+  .id{display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;margin-top:8px}
+  .id code{font-size:20px;font-weight:700;letter-spacing:1px;color:var(--gold1)}
+  .copy{border:0;border-radius:10px;padding:8px 12px;font-weight:700;background:#3d7ff0;color:#fff;cursor:pointer}
+  .label{font-size:13px;color:var(--muted)}
+  ol{list-style:none;display:flex;flex-direction:column;gap:10px}
+  ol li{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.35}
+  ol li span{flex:0 0 26px;height:26px;border-radius:50%;background:linear-gradient(var(--gold1),var(--gold2));color:var(--ink);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .warn{color:#ffd7a0}
+  .pay{width:100%;border:3px solid var(--ink);border-radius:999px;padding:16px;font-size:20px;font-weight:800;letter-spacing:1px;
+    background:linear-gradient(var(--gold1),var(--gold2));color:var(--ink);cursor:pointer;box-shadow:0 8px 24px rgba(245,166,35,.35)}
+  .pay:active{transform:translateY(2px)}
+  .foot{font-size:13px;color:var(--muted);line-height:1.5}
+  .foot a{color:var(--gold1)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="gem">💎</div>
+  <h1>пополнение <b>алмазов</b></h1>
+  <div class="sum" id="sum"></div>
+
+  <div class="card">
+    <div class="label">🆔 твой id — вставь его в сообщение к донату</div>
+    <div class="id"><code id="uid">—</code><button class="copy" id="copy">копировать</button></div>
+  </div>
+
+  <div class="card">
+    <ol>
+      <li><span>1</span><div>жми «оплатить» — откроется Boosty</div></li>
+      <li><span>2</span><div>впиши сумму и <b class="warn">вставь свой id в сообщение</b></div></li>
+      <li><span>3</span><div>оплати картой — алмазы придут в бота сами за 1–2 минуты</div></li>
+    </ol>
+  </div>
+
+  <button class="pay" id="pay">💸 ОПЛАТИТЬ</button>
+
+  <div class="foot" id="foot">без id в сообщении бот не поймёт, кому начислить алмазы</div>
+</div>
+<script>
+  // ===== НАСТРОЙКА =====
+  const BOOSTY_URL = 'https://boosty.to/ТВОЙ_БЛОГ';   // ссылка, где у тебя кнопка доната
+  const SUPPORT = '';                                // ник для вопросов без @ (пусто — не показывать)
+  // =====================
+  const tg = window.Telegram?.WebApp;
+  tg?.ready(); tg?.expand();
+  const q = new URLSearchParams(location.search);
+  const d = q.get('d'), rub = q.get('rub');
+  document.getElementById('sum').innerHTML = d && rub ? `💎 <b>${d}</b> алмазов = <b>${rub} ₽</b>` : '';
+  const id = tg?.initDataUnsafe?.user?.id ?? q.get('id') ?? '—';
+  document.getElementById('uid').textContent = id;
+  document.getElementById('copy').onclick = async (e) => {
+    try { await navigator.clipboard.writeText(String(id)); e.target.textContent = 'готово ✓'; }
+    catch { e.target.textContent = 'выдели и скопируй'; }
+  };
+  document.getElementById('pay').onclick = () => (tg?.openLink ? tg.openLink(BOOSTY_URL) : window.open(BOOSTY_URL, '_blank'));
+  if (SUPPORT) document.getElementById('foot').innerHTML += `<br>💬 проблемы с оплатой — <a href="https://t.me/${SUPPORT}">@${SUPPORT}</a>`;
+</script>
+</body>
+</html>
